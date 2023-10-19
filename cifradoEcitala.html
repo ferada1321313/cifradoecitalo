@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cifrado de la Escítala</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        textarea {
+            width: 20%;
+            padding: 10px;
+        }
+
+        input {
+            padding: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        p {
+            font-weight: bold;
+        }
+
+        #matrix-container {
+            margin: 10px;
+        }
+
+        table {
+            border: 2px solid #333;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cifrado de la Escítala</h1>
+    <textarea id="message" rows="5" cols="40" placeholder="Ingrese el mensaje"></textarea>
+    <br>
+    <input type="number" id="key" placeholder="Diámetro de la Escítala">
+    <br>
+    <button onclick="encryptMessage()">Cifrar</button>
+    <button onclick="decryptMessage()">Descifrar</button>
+    <br>
+    <p>Matriz:</p>
+    <div id="matrix-container">
+        <table id="matrix"></table>
+    </div>
+    <p>Mensaje Cifrado: <span id="encryptedMessage"></span></p>
+    <p>Mensaje Descifrado: <span id="decryptedMessage"></span></p>
+
+    <script>
+        function displayMatrix(matrix) {
+            const matrixTable = document.getElementById("matrix");
+            matrixTable.innerHTML = '';
+
+            matrix.forEach(row => {
+                const tr = document.createElement("tr");
+                row.forEach(letter => {
+                    const td = document.createElement("td");
+                    td.textContent = letter;
+                    tr.appendChild(td);
+                });
+                matrixTable.appendChild(tr);
+            });
+        }
+
+        function encryptMessage() {
+            const message = document.getElementById("message").value;
+            const key = parseInt(document.getElementById("key").value);
+
+            if (key <= 0) {
+                alert("El diámetro de la Escítala debe ser un número positivo.");
+                return;
+            }
+
+            const numRows = Math.ceil(message.length / key);
+
+            let matrix = new Array(numRows).fill(null).map(() => new Array(key).fill(" "));
+
+            let rowIndex = 0;
+            let colIndex = 0;
+
+            for (let i = 0; i < message.length; i++) {
+                matrix[rowIndex][colIndex] = message[i];
+                rowIndex = (rowIndex + 1) % numRows;
+                if (rowIndex === 0) {
+                    colIndex++;
+                }
+            }
+
+            displayMatrix(matrix);
+
+            const encryptedMessage = matrix.map(row => row.join("")).join("");
+            document.getElementById("encryptedMessage").textContent = encryptedMessage;
+        }
+
+        function decryptMessage() {
+            const message = document.getElementById("encryptedMessage").textContent;
+            const key = parseInt(document.getElementById("key").value);
+            const numRows = Math.ceil(message.length / key);
+
+            let matrix = new Array(numRows).fill(null).map(() => new Array(key).fill(" "));
+            let matrixIndex = 0;
+
+            for (let colIndex = 0; colIndex < key; colIndex++) {
+                for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+                    matrix[rowIndex][colIndex] = message[matrixIndex++];
+                }
+            }
+
+            displayMatrix(matrix);
+
+            const decryptedMessage = matrix.reduce((acc, row) => acc + row.join(""), "");
+            document.getElementById("decryptedMessage").textContent = decryptedMessage;
+        }
+    </script>
+</body>
+</html>
